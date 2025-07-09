@@ -28,35 +28,35 @@ This project demonstrates my ability to build secure, dynamic, and interactive w
 | **Error Handling**    | Custom ExpressError class and middleware        |
 
 
-wanderlust/
-│
-├── models/            # Mongoose Schemas (User, Listing, Review)
-│
-├── routes/            # Express Routers (listings, reviews, users)
-│
-├── views/             # EJS Templates (with partials and layouts)
-│
-├── public/            # Static assets (CSS, JS, Images)
-│
-├── utils/             # Utility files (ExpressError, middleware)
-│
-├── app.js             # Main Express application
-│
-├── .env               # Environment variables (DB_URL, SECRET)
-│
-└── package.json       # Project metadata and dependencies
+
+
+
+
+
 
 
 📋 Features
+
 🧭 Browse all listings (Index Route)
+
 🔍 View details of any listing (Show Route)
+
 ➕ Create new listings (New Route)
+
 ✏️ Edit & update listings (Edit & Update Routes)
+
 ❌ Delete listings (Delete Route)
+
 💬 Add reviews to listings
+
 🧹 Delete individual reviews
+
 ✅ Flash success/error messages
+
 🧑‍💻 User registration & login
+
 🗝 Secure session handling
+
 🔐 Protected routes for authenticated actions
+
 📂 Error handling middleware for both sync/async routes
