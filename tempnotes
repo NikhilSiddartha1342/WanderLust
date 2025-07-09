@@ -1,0 +1,31 @@
+views folder is created for listings first,
+
+
+if we create another collection users then we can create views folder for that also
+
+
+in this way we can create different views folders for different collections
+
+
+
+
+
+ejs-mate is a npm package which is used to apply styling to the content
+this help in creating templates(layouts)
+ex: navbar is same for all pages ans same goes to footer
+ejs-mate is used to make this template
+this are includes or partials
+
+we are creating a boilerplate which will be the starting strcuture before doing anyhting in that
+
+
+
+
+
+
+utils folder contain error classes
+all extra files required for project
+
+
+
+.env files all info about secret credentials which we should not share with anyone.
