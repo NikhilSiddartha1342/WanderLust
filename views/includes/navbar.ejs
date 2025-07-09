@@ -1,0 +1,69 @@
+<!-- 
+<style>
+  .btn-search {
+    background-color: #fe424d;
+    color: #fff;
+    font-size: small;
+    border-radius: 25px;
+    padding: 0 1rem 0 1rem;
+    /* top right bottom left */
+  }
+
+  .btn-search:hover {
+    background-color: #fe424d;
+    color: #fff;
+  }
+
+  .btn-search i {
+    display: inline;
+    margin-right: 0.5rem;
+  }
+
+  .search-inp {
+    border-radius: 25px;
+    padding: 0.5rem 3rem 0.5rem 3rem;
+    font-size: 1rem;
+  } 
+</style> -->
+
+
+
+
+
+<nav class="navbar navbar-expand-md navbar-light bg-light border-bottom sticky-top">
+    <!-- sticky-top keeps navbar always at top no matter how much we scroll -->
+    <!-- border-bottom -> will give underline at bottom for any structure -->
+  <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" href="/listings">Explore</a>
+      <!-- <a class="nav-item nav-link disabled" href="#">Disabled</a> -->
+    </div>
+
+<!-- 
+    <div class="navbar-nav ms-auto">
+      <form class="d-flex" role="search">
+      <input class="form-control me-2 search-inp" type="search" placeholder="Search destinations"/>
+      <button class="btn btn-search" type="submit">
+        <i class="fa-solid fa-magnifying-glass"></i>Search</button>
+    </form>
+    </div> -->
+
+
+    <div class="navbar-nav ms-auto">
+      <!-- ms-auto means margin from start this shifts contents to right -->
+      <a class="nav-item nav-link" href="/listings/new">Wanderlust your home</a>
+       <% if(!currUser) { %>
+        <!-- we cannot access diretly req.user here. So define currUser in req.locals so that we can access it anywhere.DEfining is done in app.js -->
+        <a class="nav-item nav-link" href="/signup"><b>Sign Up</b></a>
+        <a class="nav-item nav-link" href="/login"><b>Login</b></a>
+       <% } %>
+      <% if(currUser) { %>
+          <a class="nav-item nav-link" href="/logout"><b>logout</b></a>
+      <% } %>
+    </div>
+  </div>
+</nav>
