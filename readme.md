@@ -1,31 +1,62 @@
-views folder is created for listings first,
+🏡 WanderLust - Full-Stack Web Application for Listings & Reviews
+🚀 About the Project
+WanderLust is a full-stack web application for users to explore, create, and review property listings like villas, hotels, resorts, and vacation rentals. It’s built using the Model-View-Controller (MVC) architecture to ensure clean code separation and scalability.
+
+This project demonstrates my ability to build secure, dynamic, and interactive web applications using modern technologies and industry best practices like:
+1)User authentication
+2)Session management
+3)RESTful routing
+4)Data validation
+5)Error handling
+6)Flash messaging
+7)Template rendering
+8)Database schema modeling
+
+| Category              | Technology / Concept                            |
+| --------------------- | ----------------------------------------------- |
+| **Backend Framework** | Express.js (Node.js)                            |
+| **Database**          | MongoDB with Mongoose ODM                       |
+| **Templating Engine** | EJS with EJS-Mate layout support                |
+| **Authentication**    | Passport.js with LocalStrategy                  |
+| **Session Storage**   | express-session with connect-mongo (MongoStore) |
+| **Validation**        | Joi for server-side form validation             |
+| **Flash Messages**    | connect-flash for user feedback                 |
+| **HTTP Methods**      | method-override for PUT & DELETE support        |
+| **Static Assets**     | Served using Express middleware                 |
+| **File Structure**    | MVC (Model-View-Controller) architecture        |
+| **Security**          | Environment Variables (.env), httpOnly Cookies  |
+| **Error Handling**    | Custom ExpressError class and middleware        |
 
 
-if we create another collection users then we can create views folder for that also
+wanderlust/
+│
+├── models/            # Mongoose Schemas (User, Listing, Review)
+│
+├── routes/            # Express Routers (listings, reviews, users)
+│
+├── views/             # EJS Templates (with partials and layouts)
+│
+├── public/            # Static assets (CSS, JS, Images)
+│
+├── utils/             # Utility files (ExpressError, middleware)
+│
+├── app.js             # Main Express application
+│
+├── .env               # Environment variables (DB_URL, SECRET)
+│
+└── package.json       # Project metadata and dependencies
 
 
-in this way we can create different views folders for different collections
-
-
-
-
-
-ejs-mate is a npm package which is used to apply styling to the content
-this help in creating templates(layouts)
-ex: navbar is same for all pages ans same goes to footer
-ejs-mate is used to make this template
-this are includes or partials
-
-we are creating a boilerplate which will be the starting strcuture before doing anyhting in that
-
-
-
-
-
-
-utils folder contain error classes
-all extra files required for project
-
-
-
-.env files all info about secret credentials which we should not share with anyone.
+📋 Features
+🧭 Browse all listings (Index Route)
+🔍 View details of any listing (Show Route)
+➕ Create new listings (New Route)
+✏️ Edit & update listings (Edit & Update Routes)
+❌ Delete listings (Delete Route)
+💬 Add reviews to listings
+🧹 Delete individual reviews
+✅ Flash success/error messages
+🧑‍💻 User registration & login
+🗝 Secure session handling
+🔐 Protected routes for authenticated actions
+📂 Error handling middleware for both sync/async routes
