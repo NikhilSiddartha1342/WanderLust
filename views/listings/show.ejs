@@ -103,3 +103,7 @@
     <h3>Location: <%= listing.location %>, <%= listing.country %></h3>
     <% } %>
 </div>
+
+<% if (process.env.MAP_TOKEN) { %>
+<script src="/js/map.js"></script>
+<% } %>
