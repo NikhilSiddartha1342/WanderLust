@@ -338,6 +338,10 @@ app.use((err, req, res, next) => {
 
 
 // Start the server
-app.listen(8080, () => {
-    console.log("Server is listening at port 8080");
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+    console.log(`Server is listening at port ${PORT}`);
 });
+
+// Export the Express API for Vercel
+module.exports = app;
