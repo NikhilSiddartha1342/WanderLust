@@ -1,7 +1,6 @@
-if(process.env.NODE_ENV != "production") {
+if(process.env.NODE_ENV !== "production") {
     require('dotenv').config()
 }
-// console.log(process.env.SECRET);
 
 const express = require("express");
 const app = express();
@@ -55,14 +54,29 @@ const upload = multer({ dest: 'uploads/' })
 */
 
 const dburl = process.env.ATLASDB_URL;
-main().then(() => {
-    console.log("Connected to DB successfully");
-}).catch((err) => console.log(err));
-//database connection
-async function main() {
-    mongoose.connect(dburl);
+
+// Database connection with better error handling
+async function connectDB() {
+    try {
+        if (!dburl) {
+            throw new Error('ATLASDB_URL environment variable is not set');
+        }
+        await mongoose.connect(dburl, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log("Connected to DB successfully");
+    } catch (err) {
+        console.error("Database connection error:", err);
+        // Don't exit in serverless environment
+        if (process.env.NODE_ENV !== "production") {
+            process.exit(1);
+        }
+    }
 }
 
+// Initialize database connection
+connectDB();
 
 const store = MongoStore.create({
     mongoUrl : dburl,
@@ -85,6 +99,7 @@ const sessonOptions = {
         expires : Date.now() + 7*24*60*60*1000,//1 week millisec, this cookie will work upto next seven days
         maxAge : 7*24*60*60*1000,
         httpOnly : true,//security purposes(cross scripting attacks)
+        secure: process.env.NODE_ENV === "production", // Use secure cookies in production
     }
 }
 
@@ -129,6 +144,16 @@ app.use((req, res, next) => {
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
+
+// Health check route for Vercel
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "OK", timestamp: new Date().toISOString() });
+});
+
+// 404 handler for all unmatched routes
+app.all("*", (req, res, next) => {
+    next(new ExpressError(404, "Page not found!"));
+});
 
 /*
 basic api
@@ -332,16 +357,21 @@ app.use((err, req, res, next) => {
         return next(err); // delegate to default Express error handler
     }
 
+    // Log error for debugging
+    console.error("Error:", err);
+    
     let { status = 500, message = "Something went wrong" } = err;
     res.status(status).render("error.ejs", { err });
 });
 
 
 // Start the server
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-    console.log(`Server is listening at port ${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+    const PORT = process.env.PORT || 8080;
+    app.listen(PORT, () => {
+        console.log(`Server is listening at port ${PORT}`);
+    });
+}
 
 // Export the Express API for Vercel
 module.exports = app;
