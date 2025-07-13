@@ -1,7 +1,6 @@
 if(process.env.NODE_ENV != "production") {
     require('dotenv').config()
 }
-// console.log(process.env.SECRET);
 
 const express = require("express");
 const app = express();
@@ -55,6 +54,12 @@ const upload = multer({ dest: 'uploads/' })
 */
 
 const dburl = process.env.ATLASDB_URL;
+
+if (!dburl) {
+    console.error("ATLASDB_URL environment variable is not set");
+    process.exit(1);
+}
+
 main().then(() => {
     console.log("Connected to DB successfully");
 }).catch((err) => console.log(err));
@@ -67,7 +72,7 @@ async function main() {
 const store = MongoStore.create({
     mongoUrl : dburl,
     crypto : {
-        secret : process.env.SECRET,
+        secret : process.env.SECRET || 'fallback-secret-key',
     },
     touchAfter : 24*60*60,//once loggged in it will be available for  1day after 1 day it will automatically logged out of your device
 })
@@ -78,7 +83,7 @@ store.on("error", () => {
 
 const sessonOptions = {
     store,//info regarding mongStore
-    secret : process.env.SECRET,
+    secret : process.env.SECRET || 'fallback-secret-key',
     resave : false,
     saveUninitialized : true,
     cookie : {
@@ -343,5 +348,5 @@ app.listen(PORT, () => {
     console.log(`Server is listening at port ${PORT}`);
 });
 
-// Export the Express API for Vercel
+// Export the Express API
 module.exports = app;

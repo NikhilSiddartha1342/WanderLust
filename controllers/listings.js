@@ -1,8 +1,12 @@
 const Listing = require("../models/listing");
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
-const mbxTilesets = require('@mapbox/mapbox-sdk/services/geocoding');//in place of geocoding we an any service of mapbox/mapbox-sdk
 const mapToken = process.env.MAP_TOKEN;
-const geoCodingClient = mbxGeocoding({ accessToken : mapToken});
+
+if (!mapToken) {
+    console.warn("MAP_TOKEN environment variable is not set. Map functionality will be disabled.");
+}
+
+const geoCodingClient = mapToken ? mbxGeocoding({ accessToken : mapToken}) : null;
 
 
 module.exports.index = async(req, res) => {
@@ -33,14 +37,25 @@ module.exports.showListing = async (req, res) => {
 
 module.exports.createListing = async (req, res) => {
     // console.log("Request Body:", req.body.listing);
-    let response = await geoCodingClient
-        .forwardGeocode({
-            query : req.body.listing.location,
-            limit : 1,//default : 5
-        })
-        .send();
-    // console.log(response.body.features[0].geometry);its an array
-    // res.send("Done!!");
+    
+    let geometry = { type: "Point", coordinates: [0, 0] }; // Default coordinates
+    
+    if (geoCodingClient) {
+        try {
+            let response = await geoCodingClient
+                .forwardGeocode({
+                    query : req.body.listing.location,
+                    limit : 1,//default : 5
+                })
+                .send();
+            
+            if (response.body.features && response.body.features.length > 0) {
+                geometry = response.body.features[0].geometry;
+            }
+        } catch (error) {
+            console.warn("Geocoding failed, using default coordinates:", error.message);
+        }
+    }
 
 
     let url = req.file.path;
@@ -50,7 +65,7 @@ module.exports.createListing = async (req, res) => {
     const newListing = new Listing(req.body.listing);
     newListing.owner = req.user._id;
     newListing.image = {url, filename};
-    newListing.geometry = response.body.features[0].geometry;
+    newListing.geometry = geometry;
     // passport stores user information in req.user. we are using it for defining owner of a listing
     await newListing.save();
 
