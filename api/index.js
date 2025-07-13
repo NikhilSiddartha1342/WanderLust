@@ -39,10 +39,12 @@ const connectDB = async () => {
   }
   
   try {
-    const dburl = process.env.ATLASDB_URL;
-    if (!dburl) {
-      throw new Error('ATLASDB_URL environment variable is not set');
+    // Check if environment variables exist
+    if (!process.env.ATLASDB_URL) {
+      throw new Error('ATLASDB_URL environment variable is required');
     }
+    
+    const dburl = process.env.ATLASDB_URL;
     
     await mongoose.connect(dburl, {
       useNewUrlParser: true,
@@ -58,26 +60,43 @@ const connectDB = async () => {
     console.log("Connected to DB successfully");
   } catch (err) {
     console.error("Database connection error:", err);
-    throw err;
+    // Don't throw in serverless - handle gracefully
+    isConnected = false;
   }
 };
 
-// Session configuration
-const store = MongoStore.create({
-  mongoUrl: process.env.ATLASDB_URL,
-  crypto: {
-    secret: process.env.SECRET,
-  },
-  touchAfter: 24 * 60 * 60,
-});
+// Check required environment variables
+const requiredEnvVars = ['ATLASDB_URL', 'SECRET'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
-store.on("error", (err) => {
-  console.log("ERROR IN MONGO SESSION STORE", err);
-});
+if (missingEnvVars.length > 0) {
+  console.error('Missing required environment variables:', missingEnvVars);
+}
+
+// Session configuration
+let store;
+try {
+  if (process.env.ATLASDB_URL) {
+    store = MongoStore.create({
+      mongoUrl: process.env.ATLASDB_URL,
+      crypto: {
+        secret: process.env.SECRET || 'fallback-secret',
+      },
+      touchAfter: 24 * 60 * 60,
+    });
+    
+    store.on("error", (err) => {
+      console.log("ERROR IN MONGO SESSION STORE", err);
+    });
+  }
+} catch (err) {
+  console.error("Session store creation error:", err);
+}
+
 
 const sessionOptions = {
-  store,
-  secret: process.env.SECRET,
+  store: store || undefined,
+  secret: process.env.SECRET || 'fallback-secret-key',
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -116,7 +135,14 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ 
     status: "OK", 
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV 
+    environment: process.env.NODE_ENV,
+    database: isConnected ? "connected" : "disconnected",
+    envVars: {
+      hasAtlasUrl: !!process.env.ATLASDB_URL,
+      hasSecret: !!process.env.SECRET,
+      hasCloudName: !!process.env.CLOUD_NAME,
+      hasMapToken: !!process.env.MAP_TOKEN
+    }
   });
 });
 
@@ -152,13 +178,17 @@ app.use((err, req, res, next) => {
 // Serverless function handler
 module.exports = async (req, res) => {
   try {
-    await connectDB();
+    // Try to connect to database, but don't fail if it doesn't work
+    if (!isConnected) {
+      await connectDB();
+    }
     return app(req, res);
   } catch (error) {
     console.error("Serverless function error:", error);
     return res.status(500).json({ 
       error: "Internal server error",
-      message: error.message 
+      message: error.message,
+      timestamp: new Date().toISOString()
     });
   }
 };
