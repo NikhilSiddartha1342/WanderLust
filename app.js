@@ -135,6 +135,11 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
+// Root route - redirect to listings
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
+
 /*
 basic api
 app.get("/", (req, res) => {
